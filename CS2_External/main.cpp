@@ -7,12 +7,15 @@
 #include <cstdlib>
 #include <KnownFolders.h>
 #include <ShlObj.h>
+#include <thread>
 
 namespace fs = std::filesystem;
 
 int main()
 {
 	auto ProcessStatus = ProcessMgr.Attach("cs2.exe");
+	std::thread LoopThread;
+
 	char documentsPath[MAX_PATH];
 	if (SHGetFolderPathA(NULL, CSIDL_PERSONAL, NULL, 0, documentsPath) != S_OK) {
 		std::cerr << "Failed to get the Documents folder path." << std::endl;
@@ -66,6 +69,7 @@ int main()
 
 	std::cout << "Runing..." << std::endl;
 
+	LoopThread = std::thread(Cheats::Loop);
 	try
 	{
 		Gui.AttachAnotherWindow("Counter-Strike 2", "SDL_app", Cheats::Run);
@@ -76,6 +80,12 @@ int main()
 	}
 
 END:
+	// Close Loop thread.
+	Cheats::LoopThreadEnd = true;
+
+	if (LoopThread.joinable())
+		LoopThread.join();
+
 	system("pause");
 	return 0;
 }

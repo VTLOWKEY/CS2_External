@@ -9,7 +9,10 @@
 
 namespace Cheats
 {
+	inline CEntity LocalEntity;
+	inline bool LoopThreadEnd = false;
 	void Menu();
 	void RadarSetting(Base_Radar& Radar);
 	void Run();
+	void Loop();
 }

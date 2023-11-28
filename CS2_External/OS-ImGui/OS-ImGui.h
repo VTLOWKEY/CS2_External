@@ -46,6 +46,8 @@ namespace OSImGui
 		void ShadowCircle(Vec2 Pos, float Radius, ImColor CircleColor, ImColor ShadowColor, float ShadowThickness, Vec2 ShadowOffset, int Num = 30);
 		// Ô²Í·»¬¶¯Ìõ
 		bool SliderScalarEx1(const char* label, ImGuiDataType data_type, void* p_data, const void* p_min, const void* p_max, const char* format, ImGuiSliderFlags flags);
+		void DrawQuadFilled(Vec2 p1, Vec2 p2, Vec2 p3, Vec2 p4, ImColor Color);
+		void DrawHexagonFilled(Vec2 p1, Vec2 p2, Vec2 p3, Vec2 p4, Vec2 p5, Vec2 p6, ImColor Color);
 	};
 }
 

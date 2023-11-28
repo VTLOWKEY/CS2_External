@@ -94,6 +94,28 @@ namespace OSImGui
         }
     }
 
+	void OSImGui::DrawQuadFilled(Vec2 p1, Vec2 p2, Vec2 p3, Vec2 p4, ImColor Color) 
+    {
+		ImVec2 n1 = p1.ToImVec2();
+		ImVec2 n2 = p2.ToImVec2();
+		ImVec2 n3 = p3.ToImVec2();
+		ImVec2 n4 = p4.ToImVec2();
+		ImGui::GetBackgroundDrawList()->AddQuadFilled(n1, n2, n3, n4, Color);
+	}
+
+
+	void OSImGui::DrawHexagonFilled(Vec2 p1, Vec2 p2, Vec2 p3, Vec2 p4, Vec2 p5, Vec2 p6, ImColor Color)
+	{
+        auto DrawList = ImGui::GetBackgroundDrawList();
+        DrawList->PathLineTo(p1.ToImVec2());
+        DrawList->PathLineTo(p2.ToImVec2());
+        DrawList->PathLineTo(p3.ToImVec2());
+        DrawList->PathLineTo(p4.ToImVec2());
+        DrawList->PathLineTo(p5.ToImVec2());
+        DrawList->PathLineTo(p6.ToImVec2());
+        DrawList->PathFillConvex(Color);
+	}
+
     void OSImGui::Arc(ImVec2 Center, float Radius, ImColor Color, float Thickness, float Angle_begin, float Angle_end, float Nums)
     {
         ImDrawList* DrawList = ImGui::GetBackgroundDrawList();

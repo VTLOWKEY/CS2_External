@@ -219,27 +219,7 @@ void Cheats::Run()
 	if (MenuConfig::ShowMenu)
 		Menu();
 
-	// Update matrix
-	if (!ProcessMgr.ReadMemory(gGame.GetMatrixAddress(), gGame.View.Matrix, 64))
-		return;
-
-	// Update EntityList Entry
-	gGame.UpdateEntityListEntry();
-
-	DWORD64 LocalControllerAddress = 0;
-	DWORD64 LocalPawnAddress = 0;
-
-	if (!ProcessMgr.ReadMemory(gGame.GetLocalControllerAddress(), LocalControllerAddress))
-		return;
-	if (!ProcessMgr.ReadMemory(gGame.GetLocalPawnAddress(), LocalPawnAddress))
-		return;
-
-	// LocalEntity
-	CEntity LocalEntity;
-	static int LocalPlayerControllerIndex = 1;
-	if (!LocalEntity.UpdateController(LocalControllerAddress))
-		return;
-	if (!LocalEntity.UpdatePawn(LocalPawnAddress) && !MenuConfig::ShowWhenSpec)
+	if (Cheats::LocalEntity.Controller.Address == NULL)
 		return;
 
 	// HealthBar Map
@@ -255,6 +235,8 @@ void Cheats::Run()
 	Base_Radar Radar;
 	if (MenuConfig::ShowRadar)
 		RadarSetting(Radar);
+
+	static int LocalPlayerControllerIndex = 1;
 
 	for (int i = 0; i < 64; i++)
 	{
@@ -431,12 +413,6 @@ void Cheats::Run()
 	// Fov circle
 	if(MenuConfig::ShowAimFovRange)
 		Render::DrawFovCircle(LocalEntity);
-	
-	if (MenuConfig::BunnyHop)
-		Bunnyhop::Run(LocalEntity);
-
-	if (MenuConfig::AntiFlashbang)
-		AntiFlashbang::Run(LocalEntity);
 
 	if (MenuConfig::AimBot && GetAsyncKeyState(AimControl::HotKey))
 	{
@@ -444,5 +420,32 @@ void Cheats::Run()
 		{
 			AimControl::AimBot(LocalEntity, LocalEntity.Pawn.CameraPos, AimPos);
 		}
+	}
+}
+
+void Cheats::Loop() {
+	while (!LoopThreadEnd) {
+		// Update matrix
+		if (!ProcessMgr.ReadMemory(gGame.GetMatrixAddress(), gGame.View.Matrix, 64))
+			continue;
+		// Update EntityList Entry
+		gGame.UpdateEntityListEntry();
+		DWORD64 LocalControllerAddress = 0;
+		DWORD64 LocalPawnAddress = 0;
+		ProcessMgr.ReadMemory<DWORD64>(gGame.GetLocalControllerAddress(), LocalControllerAddress);
+		if (!LocalControllerAddress)
+			continue;
+		ProcessMgr.ReadMemory<DWORD64>(gGame.GetLocalPawnAddress(), LocalPawnAddress);
+		if (!LocalPawnAddress)
+			continue;
+		// LocalEntity
+		if (!LocalEntity.UpdateController(LocalControllerAddress))
+			continue;
+		if (!LocalEntity.UpdatePawn(LocalPawnAddress) && !MenuConfig::ShowWhenSpec)
+			continue;
+		if (MenuConfig::BunnyHop)
+			Bunnyhop::Run(LocalEntity);
+		if (MenuConfig::AntiFlashbang)
+			AntiFlashbang::Run(LocalEntity);
 	}
 }
